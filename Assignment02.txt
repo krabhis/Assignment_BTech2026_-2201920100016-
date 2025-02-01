@@ -69,7 +69,7 @@ public:
 
 Q3:Leetcode 75 (Sort Colours)
 Logic:
-Simply sort the colors , without using in sort function ,used concept of bubble sort.
+Simply sort the colors , without using in sort function ,used concept of bubble sort.               
 
 code:
 cclass Solution {
