@@ -1,0 +1,200 @@
+DSA Section:-------------------------------------------------------------
+
+Q1:Leetcode 110 (Balance Binary Tree)
+
+code:
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+private:
+    int depth(TreeNode* root, bool &is_balanced) {
+        if (root == NULL) return 0;
+
+        int left = depth(root->left, is_balanced);
+        int right = depth(root->right, is_balanced);
+
+        if (abs(left - right) > 1) {
+            is_balanced = false;
+        }
+
+        return 1 + max(left, right);
+    }
+
+public:
+    bool isBalanced(TreeNode* root) {
+        bool is_balanced = true;
+        depth(root, is_balanced);
+        return is_balanced;
+    }
+};
+
+
+Q2:Leetcode 124 (Maximum Path Sum )
+
+code:
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+private:
+    int solve(TreeNode* root  , int&ans){
+        if (root == NULL)
+            return 0;
+        int left = solve(root->left, ans);
+        int right = solve(root->right, ans);
+        int temp = max(0, max(left, right));
+        ans = max(ans, max(root->val + left + right, root->val + temp));
+
+        return root->val + temp;
+
+
+    }
+public:
+    int maxPathSum(TreeNode* root) {
+        int ans = INT_MIN;
+        solve(root, ans);
+        return ans;
+        
+    }
+};
+
+Q3:Leetcode 863 (All nodes at distance k)
+code:
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+class Solution {
+private:
+    void makeParents(TreeNode* root, unordered_map<TreeNode*, TreeNode*>& parent_track) {
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* current = q.front();
+            q.pop();
+            if (current->left) {
+                parent_track[current->left] = current;
+                q.push(current->left);
+            }
+            if (current->right) {
+                parent_track[current->right] = current;
+                q.push(current->right);
+            }
+        }
+    }
+
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        unordered_map<TreeNode*, TreeNode*> parent_track;
+        makeParents(root, parent_track);
+        unordered_map<TreeNode*, bool> visited;
+        queue<TreeNode*> q;
+        q.push(target);
+        visited[target] = true;
+        int curr_level = 0;
+        
+        while (!q.empty()) {
+            int size = q.size();
+            if (curr_level++ == k) break;
+            for (int i = 0; i < size; i++) {
+                TreeNode* current = q.front();
+                q.pop();
+                if (current->left && !visited[current->left]) {
+                    q.push(current->left);
+                    visited[current->left] = true;
+                }
+                if (current->right && !visited[current->right]) {
+                    q.push(current->right);
+                    visited[current->right] = true;
+                }
+                if (parent_track.count(current) && !visited[parent_track[current]]) {
+                    q.push(parent_track[current]);
+                    visited[parent_track[current]] = true;
+                }
+            }
+        }
+        
+        vector<int> result;
+        while (!q.empty()) {
+            TreeNode* current = q.front();
+            q.pop();
+            result.push_back(current->val);
+        }
+        return result;
+    }
+};
+
+DBMS SECTION:------------------------------------------------------
+
+Table: Tweets
+
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| tweet_id       | int     |
+| content        | varchar |
++----------------+---------+
+tweet_id is the primary key (column with unique values) for this table.
+content consists of characters on an American Keyboard, and no other special characters.
+This table contains all the tweets in a social media app.
+ 
+
+Write a solution to find the IDs of the invalid tweets. The tweet is invalid if the number of characters used in the content of the tweet is strictly greater than 15.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Tweets table:
++----------+-----------------------------------+
+| tweet_id | content                           |
++----------+-----------------------------------+
+| 1        | Let us Code                       |
+| 2        | More than fifteen chars are here! |
++----------+-----------------------------------+
+Output: 
++----------+
+| tweet_id |
++----------+
+| 2        |
++----------+
+Explanation: 
+Tweet 1 has length = 11. It is a valid tweet.
+Tweet 2 has length = 33. It is an invalid tweet.
+
+
+Query:
+
+SELECT tweet_id FROM Tweets
+WHERE LENGTH(content) > 15;

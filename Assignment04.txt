@@ -2,7 +2,6 @@ DSA Section:-------------------------------------------------------------
 
 Q1:Leetcode 2236 (Root Equals Sum of Children)
 
-
 code:
 /**
  * Definition for a binary tree node.
