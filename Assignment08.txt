@@ -1,0 +1,163 @@
+DSA Section:-------------------------------------------------------------
+
+Q1:Leetcode 230 (kth smallest element)
+
+code:
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void kthSmallest(TreeNode* root, int k, int& count, int& result) {
+        if (root == nullptr) return;
+
+        kthSmallest(root->left, k, count, result);
+            count++;
+        if (count== k) {
+            result = root->val;
+            return;
+        }
+
+        kthSmallest(root->right, k, count, result);
+    }
+
+    int kthSmallest(TreeNode* root, int k) {
+        int count = 0;
+        int result = 0;
+        kthSmallest(root, k, count, result);
+        return result;
+    }
+};
+
+
+
+Q2:Leetcode 98 (Validate binary search tree)
+
+c/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    void inorder(TreeNode* root, vector<int> &ans) {
+        if (root == NULL) return;
+        inorder(root->left, ans);
+        ans.push_back(root->val);
+        inorder(root->right, ans);
+    }
+public:
+    bool isValidBST(TreeNode* root) {
+        if (root == NULL) return true;
+        
+        vector<int> ans;
+        inorder(root, ans);
+                for (int i = 1; i < ans.size(); i++) {
+            if (ans[i] <= ans[i - 1]) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};
+
+Q3:Leetcode 701 (LCA in BST)
+code:
+class Solution {
+private:
+    bool root_to_target(TreeNode* root, TreeNode* target, vector<TreeNode*>& ans) {
+        if (root == NULL) return false;
+        ans.push_back(root);
+        if (root == target) return true;
+        if (root_to_target(root->left, target, ans) || root_to_target(root->right, target, ans)) {
+            return true;
+        }
+        ans.pop_back();
+        return false;
+    }
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        vector<TreeNode*> path1, path2;
+        root_to_target(root, p, path1);
+        root_to_target(root, q, path2);
+
+        TreeNode* lca = NULL;
+        int i = 0;
+        while (i < path1.size() && i < path2.size() && path1[i] == path2[i]) {
+            lca = path1[i];
+            i++;
+        }
+        return lca;
+    }
+};
+
+
+DBMS SECTION:------------------------------------------------------
+
+Table: World
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| name        | varchar |
+| continent   | varchar |
+| area        | int     |
+| population  | int     |
+| gdp         | bigint  |
++-------------+---------+
+name is the primary key (column with unique values) for this table.
+Each row of this table gives information about the name of a country, the continent to which it belongs, its area, the population, and its GDP value.
+ 
+
+A country is big if:
+
+it has an area of at least three million (i.e., 3000000 km2), or
+it has a population of at least twenty-five million (i.e., 25000000).
+Write a solution to find the name, population, and area of the big countries.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+World table:
++-------------+-----------+---------+------------+--------------+
+| name        | continent | area    | population | gdp          |
++-------------+-----------+---------+------------+--------------+
+| Afghanistan | Asia      | 652230  | 25500100   | 20343000000  |
+| Albania     | Europe    | 28748   | 2831741    | 12960000000  |
+| Algeria     | Africa    | 2381741 | 37100000   | 188681000000 |
+| Andorra     | Europe    | 468     | 78115      | 3712000000   |
+| Angola      | Africa    | 1246700 | 20609294   | 100990000000 |
++-------------+-----------+---------+------------+--------------+
+Output: 
++-------------+------------+---------+
+| name        | population | area    |
++-------------+------------+---------+
+| Afghanistan | 25500100   | 652230  |
+| Algeria     | 37100000   | 2381741 |
++-------------+------------+---------+
+
+Query:
+
+# Write your MySQL query statement below
+select name ,population,area from world where area>=3000000 or population>=25000000;
